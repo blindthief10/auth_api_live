@@ -21,4 +21,31 @@ const createUser = async (req, res, next) => {
   }
 }
 
-module.exports = createUser;
+const loginUser = async (req, res, next) => {
+  try {
+
+    const validationErrors = validationResult(req);
+
+    if (!validationErrors.isEmpty()) {
+      return res.status(400).json({errors: validationErrors.array()})
+    }
+
+    const findUser = await usersModel.findOne({userName: req.body.userName});
+
+    if (!findUser) {
+      return res.status(404).json({msg: 'User does not exist'});
+    }
+
+    const passwordMatches = await bcrypt.compare(req.body.password, findUser.password);
+
+    if (!passwordMatches) {
+      return res.status(400).json({msg: 'Password invalid'});
+    }
+
+    res.status(200).json({userName: findUser.userName, hobbies: findUser.hobbies});
+  }catch (error) {
+    next(error);
+  }
+}
+
+module.exports = {createUser, loginUser};
