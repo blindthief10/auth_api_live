@@ -12,6 +12,8 @@ const handleValidationErrors = (req, res, next) => {
     return res.status(400).json({errors: validationErrors.array()});
   }
 
+  req.toBeConsoled = 'daniel look'
+
   next();
 }
 
@@ -50,4 +52,27 @@ const loginUser = async (req, res, next) => {
   }
 }
 
-module.exports = {createUser, loginUser, handleValidationErrors};
+const updateHobbies = async (req, res, next) => {
+  try {
+    const decodedUser = await jwt.decode(req.token, process.env.SECRET);
+
+    await usersModel.findOneAndUpdate({userName: decodedUser.userName}, {$push: {hobbies: req.body.hobbies}});
+
+    res.status(202).json({msg: 'You saved a new hobby'});
+
+  }catch(error) {
+    next(error);
+  }
+}
+
+const logoutUser = async (req, res, next) => {
+  try {
+    res.clearCookie('authToken');
+
+    res.status(200).json({msg: 'User is logged out'});
+  }catch (error) {
+    next(error);
+  }
+}
+
+module.exports = {createUser, loginUser, handleValidationErrors, updateHobbies, logoutUser};

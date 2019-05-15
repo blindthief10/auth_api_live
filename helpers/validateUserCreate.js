@@ -22,6 +22,15 @@ const userCreateValidator = [
       throw new Error('User with that given username already exists');
     }
   })
-]
+];
 
-module.exports = userCreateValidator;
+const validateHobbyRequest = [
+  check('hobbies')
+    .exists().withMessage('Please put a hobby')
+    .trim()
+    .escape()
+];
+
+
+
+module.exports = {userCreateValidator, validateHobbyRequest};
