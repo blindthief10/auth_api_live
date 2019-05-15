@@ -42,7 +42,9 @@ const loginUser = async (req, res, next) => {
       return res.status(400).json({msg: 'Password invalid'});
     }
 
-    const token = await jwt.sign({userName: findUser.userName}, process.env.SECRET);
+    const initialToken = await jwt.sign({userName: findUser.userName}, process.env.SECRET);
+
+    const token = 'Bearer ' + initialToken;
 
     res.cookie('authToken', token, {httpOnly: true});
 
