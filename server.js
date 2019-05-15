@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const errorHandler = require('./middleware/errorHandler');
 const usersRouter = require('./routes/usersRouter');
+const imageRouter = require('./routes/imageRouter');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -24,7 +25,9 @@ app.listen(PORT, async () => {
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
+app.use(express.static('browser'));
 app.use(cookieParser()); // creates req.cookies to read from and the res.cookie to write to a cookie
 app.use('/users', usersRouter);
+app.use('/images', imageRouter);
 
 app.use(errorHandler);
