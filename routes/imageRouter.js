@@ -10,7 +10,8 @@ const upload = multer({storage: storage})
 const renamePromise = util.promisify(fs.rename);
 
 imageRouter.post('/upload', upload.single('profile'), async (req, res, next) => {
-  const fileType = req.file.mimetype.split('/')[1]; //'png'
+  console.log(req.file);
+  const fileType = req.file.mimetype.split('/')[1];
 
   const finalName = req.file.filename + '.' + fileType;
 
@@ -18,7 +19,8 @@ imageRouter.post('/upload', upload.single('profile'), async (req, res, next) => 
   const newPath = path.join('browser', 'uploadedImages', finalName);
 
   await renamePromise(oldPath, newPath);
-  res.status(200).json({msg: 'ok'})
+
+  res.status(200).json({file: finalName});
 })
 
 module.exports = imageRouter;
