@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
-import {  changeAction } from '../redux';
+import {  changeAction, requestAction } from '../redux';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 class LoginForm extends Component {
+
+  handleSubmit = (ev) => {
+    ev.preventDefault();
+    this.props.makeRequest({userName: this.props.userNameValue, password: this.props.passwordValue});
+  }
+
   render() {
     return (
       <>
@@ -21,6 +28,7 @@ class LoginForm extends Component {
         </div>
         <button type="submit" className="btn btn-primary btn-lg">Log in</button>
       </form>
+      {this.props.attemptRedirect && <Redirect to="/user" />}
       {this.props.hasFailed && <div className="alert alert-danger my-4">Either username or password was incorrect. Try again!</div>}
       </>
     )
@@ -36,7 +44,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleChange: ev => dispatch(changeAction(ev))
+    handleChange: ev => dispatch(changeAction(ev)),
+    makeRequest: payload => dispatch(requestAction(payload))
   }
 }
 

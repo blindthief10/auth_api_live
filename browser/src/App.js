@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { LoginFormContainer } from './components/form.js';
 import { BrowserRouter, Route } from 'react-router-dom';
+import Protected from './components/UserPage';
 
 export default class App extends Component {
   render() {
@@ -11,6 +12,7 @@ export default class App extends Component {
           <div className="jumbotron p-5">
             <BrowserRouter>
               <Route path="/" exact component={LoginFormContainer} />
+              <Route path="/user" component={Protected} />
 
             </BrowserRouter>
           </div>
