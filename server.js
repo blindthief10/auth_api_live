@@ -26,6 +26,14 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser()); // creates req.cookies to read from and the res.cookie to write to a cookie
 app.use('/users', usersRouter);
 app.use('/images', imageRouter);
-app.use(express.static('browser/build'));
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('browser/build'));
+
+  app.get('*', (req, res, next) => {
+    res.sendFile(path.join('browser', 'build', 'index.html'));
+  })
+}
+
 
 app.use(errorHandler);
