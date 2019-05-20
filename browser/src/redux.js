@@ -9,7 +9,8 @@ const initialState = {
   userInfo: null,
   hasFailed: false,
   goHome: false,
-  tempHobby: ''
+  tempHobby: '',
+  imageSource: 'https://media.istockphoto.com/photos/closeup-of-mixedbreed-monkey-between-chimpanzee-and-bonobo-smiling-picture-id507714936?k=6&m=507714936&s=612x612&w=0&h=X_r4XsnwHNZf3wSzXeTYvC6DelESliAsDus4EiSXXu0='
 };
 
 const authReducer = (state = initialState, action) => {
@@ -35,6 +36,9 @@ const authReducer = (state = initialState, action) => {
 
     case 'UPDATE_HOBBIES':
       return {...copyState, userInfo: {hobbies: action.hobbiesPayload}};
+
+    case 'REFRESH_IMAGE':
+      return {...copyState, imageSource: '../uploadedImages/' + action.imageName}
 
     case 'CHANGE':
       if (action.payload.target.getAttribute('type') === 'text') {
@@ -75,6 +79,49 @@ const redirectToHome = () => {
 
 const pushHobbyAction = hobbiesPayload => {
   return { type: 'UPDATE_HOBBIES', hobbiesPayload: hobbiesPayload }
+}
+
+const refreshImage = imageName => {
+  return { type: 'REFRESH_IMAGE', imageName: imageName };
+}
+
+export const makeUploadFetch = file => {
+  return function(dispatch) {
+
+    const formData = new FormData();
+    formData.append('profile', file);
+
+    fetch('/images/upload', {
+      method: 'post',
+      body: formData
+    })
+    .then(res => {
+      if (res.status === 400 || res.status === 404) {
+        throw new Error('An error occured. Uploading failed')
+      }
+      return res.json();
+    })
+    .then(msg => console.log(msg))
+    .catch(err => console.log(err))
+  }
+}
+
+export const fetchImage = () => {
+  return function(dispatch) {
+    fetch('/images/profile')
+    .then(res => {
+      if (res.status >= 400 && res.status < 500) {
+        throw new Error('Could not fetch');
+      }
+
+      return res.json();
+    })
+    .then(imageData => {
+      console.log(imageData);
+      dispatch(refreshImage(imageData.imageName));
+    })
+    .catch(err => console.warn(err))
+  }
 }
 
 export const loginFetch = credentials => {

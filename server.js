@@ -25,9 +25,9 @@ app.listen(PORT, async () => {
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-// app.use(express.static('browser/dist'));
 app.use(cookieParser()); // creates req.cookies to read from and the res.cookie to write to a cookie
 app.use('/users', usersRouter);
 app.use('/images', imageRouter);
+app.use(express.static('browser/build'));
 
 app.use(errorHandler);
