@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Route, Redirect, NavLink } from 'react-router-dom';
 import Auth from '../auth';
 import { connect } from 'react-redux';
+import { reduxLogout } from '../redux';
+import { HobbiesContainer } from './hobbies';
 
 export default class Protected extends Component {
   render() {
@@ -16,23 +18,41 @@ export default class Protected extends Component {
 class NavList extends Component {
   render() {
     return (
-      <ul className="nav">
-        <li className="nav-item">
-          <NavLink className="nav-link" to="/user">Home</NavLink>
-        </li>
-        <li className="nav-item">
-          <NavLink className="nav-link" to="/user/hobbies">Hobbies</NavLink>
-        </li>
-        <li className="nav-item">
-          <NavLink className="nav-link" to="/user/profile">Profile</NavLink>
-        </li>
-        <li className="nav-item">
-          <button className="btn btn-danger btn-sm">Logout</button>
-        </li>
-      </ul>
+      <>
+        <ul className="nav">
+          <li className="nav-item">
+            <NavLink className="nav-link" to="/user">Home</NavLink>
+          </li>
+          <li className="nav-item">
+            <NavLink className="nav-link" to="/user/hobbies">Hobbies</NavLink>
+          </li>
+          <li className="nav-item">
+            <NavLink className="nav-link" to="/user/profile">Profile</NavLink>
+          </li>
+          <li className="nav-item">
+            <button onClick={this.props.logout} className="btn btn-danger btn-sm">Logout</button>
+          </li>
+        </ul>
+        {this.props.goHome && <Redirect to="/" />}
+      </>
     )
   }
 }
+
+const mapNavListPropsToState = state => {
+  return {
+    goHome: state.goHome
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    logout: () => dispatch(reduxLogout())
+  }
+}
+
+const NavListContainer = connect(mapNavListPropsToState, mapDispatchToProps)(NavList);
+
 
 class WelcomeComponent extends Component {
   render() {
@@ -46,9 +66,9 @@ class UserPage extends Component {
   render() {
     return (
       <>
-        <NavList />
+        <NavListContainer />
         <Route exact path="/user" component={WelcomeComponentContainer} />
-
+        <Route path="/user/hobbies" component={HobbiesContainer} />
       </>
     )
   }

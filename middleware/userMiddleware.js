@@ -58,9 +58,9 @@ const updateHobbies = async (req, res, next) => {
   try {
     const decodedUser = await jwt.decode(req.token, process.env.SECRET);
 
-    await usersModel.findOneAndUpdate({userName: decodedUser.userName}, {$push: {hobbies: req.body.hobbies}});
+    const updatedUser = await usersModel.findOneAndUpdate({userName: decodedUser.userName}, {$push: {hobbies: req.body.hobbies}}, {new: true});
 
-    res.status(202).json({msg: 'You saved a new hobby'});
+    res.status(202).json({userName: updatedUser.userName, hobbies: updatedUser.hobbies});
 
   }catch(error) {
     next(error);

@@ -39,7 +39,8 @@ const mapStateToProps = state => {
   return {
     userNameValue: state.userNameValue,
     passwordValue: state.passwordValue,
-    loginRedirection: state.loginRedirection
+    loginRedirection: state.loginRedirection,
+    hasFailed: state.hasFailed
   }
 }
 
