@@ -1,7 +1,8 @@
 import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
+import thunk  from 'redux-thunk';
+import Auth from './auth';
 
-const initialState = {userNameValue: '', passwordValue: '', infoUser: null, attemptRedirect: false};
+const initialState = {userNameValue: '', passwordValue: '', loginRedirection: false, userInfo: null};
 
 const authReducer = (state = initialState, action) => {
 
@@ -10,17 +11,12 @@ const authReducer = (state = initialState, action) => {
   switch(action.type) {
 
     case 'FETCH_DATA':
-      return fetch('/users/login', {
-        method: 'post',
-        mode: 'cors',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(userData => {
-        console.log(userData);
-      })
-      .catch(err => console.warn(err))
+      copyState.userInfo = action.userData;
+      return copyState;
+
+    case 'REDIRECT_LOGIN':
+      copyState.loginRedirection = true;
+      return copyState;
 
     case 'CHANGE':
       if (action.payload.target.getAttribute('type') === 'text') {
@@ -42,19 +38,36 @@ export const changeAction = payload => {
   }
 }
 
-export const requestAction = payload => {
+export const requestAction = userData => {
   return {
     type: 'FETCH_DATA',
-    payload: payload
+    userData: userData
   }
 }
 
-// Here is a function, Here you make the fetch, and
-const requestHandler = payload => {
+const redirectToLogin = () => {
+  return {
+    type: 'REDIRECT_LOGIN'
+  }
+}
+
+export const loginFetch = credentials => {
   return function(dispatch) {
-    return
+    fetch('/users/login', {
+      method: 'post',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/json'},
+      body: JSON.stringify(credentials)
+    })
+    .then(res => res.json())
+    .then(userData => {
+      console.log(userData);
+      Auth.login();
+      dispatch(requestAction(userData));
+      dispatch(redirectToLogin());
+    })
+    .catch(err => console.warn(err))
   }
 }
-
 
 export const store = createStore(authReducer, applyMiddleware(thunk));

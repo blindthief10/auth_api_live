@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {  changeAction, requestAction } from '../redux';
+import {  changeAction, loginFetch } from '../redux';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
@@ -28,8 +28,8 @@ class LoginForm extends Component {
         </div>
         <button type="submit" className="btn btn-primary btn-lg">Log in</button>
       </form>
-      {this.props.attemptRedirect && <Redirect to="/user" />}
       {this.props.hasFailed && <div className="alert alert-danger my-4">Either username or password was incorrect. Try again!</div>}
+      {this.props.loginRedirection && <Redirect to='/user' />}
       </>
     )
   }
@@ -38,14 +38,15 @@ class LoginForm extends Component {
 const mapStateToProps = state => {
   return {
     userNameValue: state.userNameValue,
-    passwordValue: state.passwordValue
+    passwordValue: state.passwordValue,
+    loginRedirection: state.loginRedirection
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
     handleChange: ev => dispatch(changeAction(ev)),
-    makeRequest: payload => dispatch(requestAction(payload))
+    makeRequest: credentials => dispatch(loginFetch(credentials))
   }
 }
 
